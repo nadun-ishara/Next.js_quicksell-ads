@@ -1,64 +1,51 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding database...');
+  console.log("Seeding database...");
 
-  // 1. Seed Locations
-  await prisma.location.upsert({
-    where: { slug: 'colombo' },
-    update: {},
-    create: { name: 'Colombo', slug: 'colombo' },
+  //clear existing data
+  await prisma.adImage.deleteMany();
+  await prisma.advertisement.deleteMany();
+  await prisma.category.deleteMany();
+  await prisma.location.deleteMany();
+
+  //add main cat
+  const vehicles = await prisma.category.create({
+    data: { name: "Vehicles", slug: "vehicles" },
   });
 
-  await prisma.location.upsert({
-    where: { slug: 'kandy' },
-    update: {},
-    create: { name: 'Kandy', slug: 'kandy' },
+  const electronics = await prisma.category.create({
+    data: { name: "Electronics", slug: "electronics" },
   });
 
-  await prisma.location.upsert({
-    where: { slug: 'galle' },
-    update: {},
-    create: { name: 'Galle', slug: 'galle' },
+  const property = await prisma.category.create({
+    data: { name: "Property", slug: "property" },
   });
 
-  // 2. Seed Parent Categories
-  const electronics = await prisma.category.upsert({
-    where: { slug: 'electronics' },
-    update: {},
-    create: { name: 'Electronics', slug: 'electronics' },
+  //add sub cat
+  await prisma.category.createMany({
+    data: [
+      { name: "Cars", slug: "cars", parentId: vehicles.id },
+      { name: "Motorbikes", slug: "motorbikes", parentId: vehicles.id },
+      { name: "Mobile Phones", slug: "mobile-phones", parentId: electronics.id },
+      { name: "Laptops", slug: "laptops", parentId: electronics.id },
+    ],
   });
 
-  const vehicles = await prisma.category.upsert({
-    where: { slug: 'vehicles' },
-    update: {},
-    create: { name: 'Vehicles', slug: 'vehicles' },
+  //add locations
+  await prisma.location.createMany({
+    data: [
+      { name: "Colombo", slug: "colombo" },
+      { name: "Kandy", slug: "kandy" },
+      { name: "Galle", slug: "galle" },
+      { name: "Gampaha", slug: "gampaha" },
+      { name: "Kurunegala", slug: "kurunegala" },
+    ],
   });
 
-  // 3. Seed Subcategories
-  await prisma.category.upsert({
-    where: { slug: 'mobile-phones' },
-    update: {},
-    create: {
-      name: 'Mobile Phones',
-      slug: 'mobile-phones',
-      parentId: electronics.id,
-    },
-  });
-
-  await prisma.category.upsert({
-    where: { slug: 'cars' },
-    update: {},
-    create: {
-      name: 'Cars',
-      slug: 'cars',
-      parentId: vehicles.id,
-    },
-  });
-
-  console.log('Seeding completed successfully!');
+  console.log("Database seeded successfully!");
 }
 
 main()
