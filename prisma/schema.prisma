@@ -22,12 +22,16 @@
     id String @id @default(cuid())
     name String?
     email String @unique
+    emailVerified DateTime?
+    image String?
     role Role @default(USER)
     status String @default("ACTIVE")
     createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     advertisements Advertisement[]
     accounts Account[]
+    sessions Session[]
   }
 
   model Account {
@@ -48,15 +52,30 @@
     @@unique([provider, providerAccountId])
   }
 
+  model Session {
+    id String @id @default(cuid())
+    sessionToken String @unique
+    userId String
+    expires DateTime
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  }
+
+  model VerificationToken {
+    identifier String
+    token String @unique
+    expires DateTime
+
+    @@unique([identifier, token])
+  }
+
   model Category {
     id String @id @default(cuid())
     parentId String?
     name String
     slug String @unique
 
-    parent Category? @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-    children Category[] @relation("CategoryHierarchy")
-
+    parent Category? @relation("CategoryToSubcategory", fields: [parentId], references: [id], onDelete: Cascade)
+    children Category[] @relation("CategoryToSubcategory")
     advertisements Advertisement[]
   }
 
@@ -64,7 +83,6 @@
     id String @id @default(cuid())
     name String
     slug String @unique
-
     advertisements Advertisement[]
   }
 
