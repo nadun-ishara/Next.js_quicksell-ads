@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Zap, Search, Car, Smartphone, Home, Briefcase, Dog, Wrench, MoreHorizontal } from "lucide-react";
+import { Zap, Search, Car, Smartphone, Home, Briefcase, Dog, Wrench, MoreHorizontal, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
 interface HomePageProps {
@@ -62,24 +62,24 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-indigo-700 via-purple-700 to-fuchsia-800 text-white py-20 px-4 md:px-12 flex flex-col items-center justify-center text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight">
+      <section className="bg-[#4C28D9] text-white py-24 px-4 md:px-12 flex flex-col items-center justify-center text-center">
+        <h1 className="text-4xl md:text-5xl font-semibold mb-3 tracking-tight">
           Buy & Sell Everything <br /> Faster with QuickSell
         </h1>
-        <p className="text-indigo-100 mb-10">Find Anything in Sri Lanka</p>
+        <p className="text-indigo-200/90 text-sm mb-12">Find Anything in Sri Lanka</p>
 
         {/* Search Bar */}
-        <form action="/ads" method="GET" className="bg-white p-2 rounded-full w-full max-w-2xl flex items-center shadow-lg">
-          <div className="flex-1 px-4">
+        <form action="/ads" method="GET" className="bg-white p-1.5 rounded-full w-full max-w-2xl flex items-center shadow-lg">
+          <div className="flex-1 px-5">
             <input
               type="text"
               name="q"
               defaultValue={query}
               placeholder="What are you looking for ?"
-              className="w-full bg-transparent text-slate-800 outline-none placeholder:text-slate-400"
+              className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
             />
           </div>
-          <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full font-semibold transition shadow-md">
+          <button type="submit" className="bg-[#4C28D9] hover:bg-indigo-700 text-white px-8 py-2.5 rounded-full text-sm font-semibold transition shadow-md">
             Search
           </button>
         </form>
@@ -92,21 +92,35 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <section className="mb-16">
           <h2 className="text-xl font-bold text-slate-800 mb-8">Browse by Category</h2>
           <div className="flex flex-wrap gap-4 md:gap-6 justify-start">
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/ads?category=${cat.id}`}
-                className="bg-white hover:border-indigo-200 border border-transparent shadow-sm hover:shadow-md rounded-2xl w-[120px] h-[120px] flex flex-col items-center justify-center gap-3 transition-all cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center">
-                  {CATEGORY_ICONS[cat.name] || <MoreHorizontal className="text-slate-500 w-6 h-6" />}
-                </div>
-                <div className="text-center">
-                  <h3 className="text-sm font-semibold text-slate-700">{cat.name}</h3>
-                  <p className="text-[10px] text-slate-400">{cat._count.advertisements} ads</p>
-                </div>
-              </Link>
-            ))}
+            {categories.map((cat) => {
+              // Map colors to categories for the tinted background
+              const tintClasses: Record<string, string> = {
+                "Vehicles": "bg-blue-50 text-blue-500",
+                "Electronics": "bg-orange-50 text-orange-500",
+                "Property": "bg-green-50 text-green-500",
+                "Jobs": "bg-purple-50 text-purple-500",
+                "Pets": "bg-red-50 text-red-500",
+                "Services": "bg-indigo-50 text-indigo-500",
+                "Other": "bg-pink-50 text-pink-500"
+              };
+              const bgClass = tintClasses[cat.name] || "bg-slate-50 text-slate-500";
+              
+              return (
+                <Link
+                  key={cat.id}
+                  href={`/ads?category=${cat.id}`}
+                  className="bg-white border border-slate-100 shadow-sm hover:shadow-md rounded-3xl w-[130px] h-[130px] flex flex-col items-center justify-center gap-3 transition-all cursor-pointer"
+                >
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${bgClass}`}>
+                    {CATEGORY_ICONS[cat.name] || <MoreHorizontal className="w-6 h-6" />}
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-xs font-bold text-slate-800">{cat.name}</h3>
+                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">{cat._count.advertisements} ads</p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
@@ -162,8 +176,108 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             </div>
           )}
         </section>
-
       </main>
+
+      {/* CTA Banner & Footer Section */}
+      <div className="relative mt-20">
+        
+        {/* CTA Card */}
+        <div className="max-w-6xl mx-auto px-4 md:px-12 mb-16">
+          <div className="bg-[#5c32d6] rounded-3xl p-10 md:p-14 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 text-white text-left">
+            <div className="flex-1">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+                Sell Your Items <br /> Faster Than Ever.
+              </h2>
+              <p className="text-indigo-100 text-sm max-w-md leading-relaxed">
+                Join Sri Lanka's fastest growing marketplace. Post your ad and get noticed by thousands of buyers instantly!
+              </p>
+            </div>
+            <Link 
+              href="/ads/create" 
+              className="bg-white text-indigo-700 hover:text-indigo-800 px-8 py-3.5 rounded-full font-bold shadow-lg transition-colors flex items-center gap-2 whitespace-nowrap"
+            >
+              Post Your Ad Now
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Dark Footer */}
+        <footer className="bg-[#0B1120] text-slate-300 pt-16 pb-12 px-4 md:px-12">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-10 lg:gap-16 mb-12">
+              
+              {/* Column 1: Brand */}
+              <div className="md:col-span-1">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="bg-indigo-600 rounded p-1.5 flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-xl font-bold text-white tracking-tight">QUICKSELL</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed mb-6 pr-4">
+                  The most trusted classified ads platform for buying and selling anything in your region.
+                </p>
+                <div className="flex items-center gap-4">
+                  <a href="#" className="text-white hover:text-indigo-400 transition-colors">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                  </a>
+                  <a href="#" className="text-white hover:text-indigo-400 transition-colors">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                  </a>
+                </div>
+              </div>
+
+              {/* Column 2: Quick Links */}
+              <div>
+                <h4 className="text-white font-bold mb-5">Quick Links</h4>
+                <ul className="space-y-3 text-xs text-slate-400">
+                  <li><Link href="/" className="hover:text-indigo-400 transition-colors">Home</Link></li>
+                  <li><Link href="/ads" className="hover:text-indigo-400 transition-colors">Browse Ads</Link></li>
+                  <li><Link href="/ads/create" className="hover:text-indigo-400 transition-colors">Post an Ad</Link></li>
+                  <li><Link href="/login" className="hover:text-indigo-400 transition-colors">Create an Account</Link></li>
+                </ul>
+              </div>
+
+              {/* Column 3: Support */}
+              <div>
+                <h4 className="text-white font-bold mb-5">Support</h4>
+                <ul className="space-y-3 text-xs text-slate-400">
+                  <li><Link href="#" className="hover:text-indigo-400 transition-colors">Help Center</Link></li>
+                  <li><Link href="#" className="hover:text-indigo-400 transition-colors">Safety Tips</Link></li>
+                  <li><Link href="#" className="hover:text-indigo-400 transition-colors">Privacy Policy</Link></li>
+                </ul>
+              </div>
+
+              {/* Column 4: Contact Info */}
+              <div>
+                <h4 className="text-white font-bold mb-5">Contact Info</h4>
+                <ul className="space-y-4 text-xs text-slate-400">
+                  <li className="flex items-start gap-3">
+                    <MapPin className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                    <span>Colombo, Sri Lanka</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Phone className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <span>+94 71 234 5678</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Mail className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <span>support@quicksell.lk</span>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+
+            <div className="pt-8 border-t border-slate-800 text-center">
+              <p className="text-[10px] text-slate-500 tracking-wider uppercase">
+                &copy; {new Date().getFullYear()} QUICKSELL. All rights reserved.
+              </p>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
