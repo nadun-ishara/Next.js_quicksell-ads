@@ -25,10 +25,6 @@ export const createAdSchema = z.object({
     .string()
     .min(1, { message: "Please select a Location" }),
 
-  imageUrl: z
-    .string()
-    .optional()
-    .or(z.literal("")),
 });
 
 export type CreateAdInput = z.infer<typeof createAdSchema>;
