@@ -37,7 +37,7 @@ export default async function AdminPanelPage({ searchParams }: AdminPanelPagePro
     },
     orderBy: { createdAt: "desc" },
   });
-
+ //admin tabs 
   const tabs = ["PENDING", "APPROVED", "REJECTED", "ALL"];
 
   return (
@@ -50,7 +50,7 @@ export default async function AdminPanelPage({ searchParams }: AdminPanelPagePro
           <p className="text-slate-500 mt-2">Manage all advertisements.</p>
         </div>
 
-        {/* Tabs */}
+        {/* tabs */}
         <div className="flex gap-8 mb-8 border-b border-slate-200">
           {tabs.map((tab) => (
             <Link

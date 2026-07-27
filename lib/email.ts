@@ -32,7 +32,7 @@ export async function sendEmail({ to, subject, html }: SendEmailProps) {
   }
 }
 
-// Ads Approve
+//ads approved
 export async function sendAdApprovedEmail(userEmail: string, adTitle: string) {
   const html = `
     <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f5;">
@@ -51,7 +51,7 @@ export async function sendAdApprovedEmail(userEmail: string, adTitle: string) {
   });
 }
 
-// Ads Reject
+//ads rejected
 export async function sendAdRejectedEmail(userEmail: string, adTitle: string, reason: string) {
   const html = `
     <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f5;">

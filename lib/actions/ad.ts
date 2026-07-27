@@ -6,12 +6,11 @@ import { prisma } from "@/lib/prisma";
 import { createAdSchema } from "@/lib/validations/ad";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export async function createAdAction(prevState: any, formData: FormData) {
   const session = await getServerSession(authOptions);
-  
+
   if (!session?.user?.id) {
     return {
       error: "You must be logged in to post an advertisement.",
@@ -27,7 +26,7 @@ export async function createAdAction(prevState: any, formData: FormData) {
   };
 
   const validation = createAdSchema.safeParse(rawData);
-  
+
   if (!validation.success) {
     return {
       errors: validation.error.flatten().fieldErrors,
@@ -50,27 +49,14 @@ export async function createAdAction(prevState: any, formData: FormData) {
   }
 
   const { title, description, price, categoryId, locationId } = validation.data;
-  
-  const savedImagePaths: string[] = [];
+
+  let savedImageUrls: string[] = [];
 
   try {
-    const uploadDir = path.join(process.cwd(), "public/uploads/ads");
-    await mkdir(uploadDir, { recursive: true });
-
-    for (const file of validImages) {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "")}`;
-      
-      const filepath = path.join(uploadDir, filename);
-      await writeFile(filepath, buffer);
-      
-      savedImagePaths.push(`/uploads/ads/${filename}`);
-    }
+    const uploadPromises = validImages.map((file) => uploadToCloudinary(file));
+    savedImageUrls = await Promise.all(uploadPromises);
   } catch (error) {
-    console.error("File Save Error:", error);
+    console.error("Cloudinary Upload Error:", error);
     return {
       error: "Failed to upload images. Please try again.",
     };
@@ -87,9 +73,9 @@ export async function createAdAction(prevState: any, formData: FormData) {
         locationId,
         status: "PENDING",
         images: {
-          create: savedImagePaths.map((filePath, index) => ({
-            filePath,
-            isPrimary: index === 0, // First uploaded image is primary
+          create: savedImageUrls.map((url, index) => ({
+            filePath: url,
+            isPrimary: index === 0,
           })),
         },
       },
