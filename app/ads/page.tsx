@@ -26,7 +26,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
 
   // Build Prisma Where Clause
   const whereClause: any = {
-    status: "PENDING",
+    status: "APPROVED",
   };
 
   if (query) {
@@ -226,9 +226,10 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                     "/images/placeholder.jpg";
 
                   return (
-                    <div
+                    <Link
+                      href={`/ads/${ad.id}`}
                       key={ad.id}
-                      className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
+                      className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group block cursor-pointer"
                     >
                       <div className="relative h-48 w-full bg-slate-100 overflow-hidden">
                         <img
@@ -253,7 +254,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                           </p>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>

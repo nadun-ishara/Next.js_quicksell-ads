@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import { Calendar, CheckCircle2, XCircle, ShieldAlert, Clock } from "lucide-react";
 import { approveAdAction, rejectAdAction } from "@/lib/actions/admin";
 
 interface AdminPanelPageProps {
@@ -57,11 +56,10 @@ export default async function AdminPanelPage({ searchParams }: AdminPanelPagePro
             <Link
               key={tab}
               href={`/admin?status=${tab}`}
-              className={`pb-4 text-sm font-medium transition-colors ${
-                currentStatus === tab
+              className={`pb-4 text-sm font-medium transition-colors ${currentStatus === tab
                   ? "text-blue-600 border-b-2 border-blue-600"
                   : "text-slate-500 hover:text-slate-900"
-              }`}
+                }`}
             >
               {tab === "ALL" ? "All Ads" : `${tab.charAt(0) + tab.slice(1).toLowerCase()} Ads`}
             </Link>
@@ -122,11 +120,10 @@ export default async function AdminPanelPage({ searchParams }: AdminPanelPagePro
                         </td>
                         {currentStatus !== "PENDING" && (
                           <td className="py-4 px-6 align-middle text-center w-40">
-                            <span className={`inline-flex px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${
-                              ad.status === "APPROVED" ? "bg-green-50 border-green-200 text-green-700" :
-                              ad.status === "REJECTED" ? "bg-red-50 border-red-200 text-red-700" :
-                              "bg-amber-50 border-amber-200 text-amber-700"
-                            }`}>
+                            <span className={`inline-flex px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${ad.status === "APPROVED" ? "bg-green-50 border-green-200 text-green-700" :
+                                ad.status === "REJECTED" ? "bg-red-50 border-red-200 text-red-700" :
+                                  "bg-amber-50 border-amber-200 text-amber-700"
+                              }`}>
                               {ad.status}
                             </span>
                           </td>

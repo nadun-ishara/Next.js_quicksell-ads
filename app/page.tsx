@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Zap, Search, Car, Smartphone, Home, Briefcase, Dog, Wrench, MoreHorizontal, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
+import { Zap, Search, Car, Smartphone, Home, Briefcase, Dog, Wrench, MoreHorizontal, MapPin, Phone, Mail, ArrowRight, Laptop, Bike } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
 interface HomePageProps {
@@ -13,7 +13,11 @@ interface HomePageProps {
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   "Vehicles": <Car className="text-blue-500 w-6 h-6" />,
+  "Cars": <Car className="text-blue-500 w-6 h-6" />,
+  "Motorbikes": <Bike className="text-red-500 w-6 h-6" />,
   "Electronics": <Smartphone className="text-orange-500 w-6 h-6" />,
+  "Laptops": <Laptop className="text-indigo-500 w-6 h-6" />,
+  "Mobile Phones": <Smartphone className="text-teal-500 w-6 h-6" />,
   "Property": <Home className="text-green-500 w-6 h-6" />,
   "Jobs": <Briefcase className="text-purple-500 w-6 h-6" />,
   "Pets": <Dog className="text-red-500 w-6 h-6" />,
@@ -37,7 +41,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     }),
     prisma.advertisement.findMany({
       where: {
-        status: "PENDING",
+        status: "APPROVED",
         ...(query ? {
           OR: [
             { title: { contains: query } },
@@ -95,28 +99,39 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             {categories.map((cat) => {
               // Map colors to categories for the tinted background
               const tintClasses: Record<string, string> = {
-                "Vehicles": "bg-blue-50 text-blue-500",
-                "Electronics": "bg-orange-50 text-orange-500",
-                "Property": "bg-green-50 text-green-500",
-                "Jobs": "bg-purple-50 text-purple-500",
-                "Pets": "bg-red-50 text-red-500",
-                "Services": "bg-indigo-50 text-indigo-500",
-                "Other": "bg-pink-50 text-pink-500"
+                "Vehicles": "bg-blue-50 text-blue-600",
+                "Cars": "bg-blue-50 text-blue-600",
+                "Motorbikes": "bg-red-50 text-red-600",
+                "Electronics": "bg-orange-50 text-orange-600",
+                "Laptops": "bg-indigo-50 text-indigo-600",
+                "Mobile Phones": "bg-teal-50 text-teal-600",
+                "Property": "bg-emerald-50 text-emerald-600",
+                "Jobs": "bg-purple-50 text-purple-600",
+                "Pets": "bg-rose-50 text-rose-600",
+                "Services": "bg-indigo-50 text-indigo-600",
+                "Other": "bg-pink-50 text-pink-600"
               };
-              const bgClass = tintClasses[cat.name] || "bg-slate-50 text-slate-500";
+              const bgClass = tintClasses[cat.name] || "bg-slate-50 text-slate-600";
               
               return (
                 <Link
                   key={cat.id}
                   href={`/ads?category=${cat.id}`}
-                  className="bg-white border border-slate-100 shadow-sm hover:shadow-md rounded-3xl w-[130px] h-[130px] flex flex-col items-center justify-center gap-3 transition-all cursor-pointer"
+                  className="group bg-white border border-slate-200 hover:border-indigo-100 shadow-sm hover:shadow-xl hover:-translate-y-1.5 rounded-[24px] w-[130px] sm:w-[145px] h-[140px] flex flex-col items-center justify-center gap-3 transition-all duration-300 cursor-pointer relative overflow-hidden"
                 >
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${bgClass}`}>
+                  {/* Subtle background glow effect on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${bgClass} group-hover:scale-110 group-hover:shadow-sm transition-all duration-300 relative z-10`}>
                     {CATEGORY_ICONS[cat.name] || <MoreHorizontal className="w-6 h-6" />}
                   </div>
-                  <div className="text-center">
-                    <h3 className="text-xs font-bold text-slate-800">{cat.name}</h3>
-                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">{cat._count.advertisements} ads</p>
+                  <div className="text-center relative z-10">
+                    <h3 className="text-[13px] font-bold text-slate-700 group-hover:text-indigo-700 transition-colors">{cat.name}</h3>
+                    <div className="mt-1.5">
+                      <span className="text-[10px] text-slate-500 font-semibold bg-slate-50 border border-slate-100 group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-100 px-2.5 py-0.5 rounded-full transition-colors inline-block">
+                        {cat._count.advertisements} ads
+                      </span>
+                    </div>
                   </div>
                 </Link>
               );
@@ -145,9 +160,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                   "/images/placeholder.jpg";
 
                 return (
-                  <div
+                  <Link
+                    href={`/ads/${ad.id}`}
                     key={ad.id}
-                    className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group"
+                    className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group block cursor-pointer"
                   >
                     <div className="relative h-48 w-full bg-slate-100 overflow-hidden">
                       <img
@@ -163,14 +179,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                       <span className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider mb-1">
                         {ad.category.name} • {ad.location.name}
                       </span>
-                      <h3 className="text-sm font-bold mt-1 text-slate-800 line-clamp-2 leading-tight">
+                      <h3 className="text-sm font-bold mt-1 text-slate-800 line-clamp-2 leading-tight group-hover:text-indigo-600 transition-colors">
                         {ad.title}
                       </h3>
                       <p className="text-slate-500 text-xs mt-2 line-clamp-2 flex-1">
                         {ad.description}
                       </p>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
