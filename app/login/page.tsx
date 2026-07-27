@@ -9,7 +9,7 @@ import { Zap, Mail, Lock, User, ArrowRight, UserPlus } from "lucide-react";
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/ads/create";
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
