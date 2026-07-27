@@ -1,39 +1,40 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
 });
 
 interface SendEmailProps {
-    to: string;
-    subject: string;
-    html: string;
+  to: string;
+  subject: string;
+  html: string;
 }
 
 export async function sendEmail({ to, subject, html }: SendEmailProps) {
-    try {
-        const info = await transporter.sendMail({
-            from: `"QuickSell Marketplace" <${process.env.EMAIL_USER}>`, // FIX: EMAIL_USER භාවිත කළා
-            to,
-            subject,
-            html,
-        });
+  try {
+    const info = await transporter.sendMail({
+      from: `"QuickSell Marketplace" <no-reply@quicksell.com>`,
+      to,
+      subject,
+      html,
+    });
 
-        console.log("Message sent successfully:", info.messageId);
-        return { success: true, messageId: info.messageId };
-    } catch (error) {
-        console.error("Error sending email:", error);
-        return { success: false, error };
-    }
+    console.log("Message sent successfully:", info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return { success: false, error };
+  }
 }
 
 // Ads Approve
 export async function sendAdApprovedEmail(userEmail: string, adTitle: string) {
-    const html = `
+  const html = `
     <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f5;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 24px; border-radius: 8px;">
         <h2 style="color: #16a34a;">Your Ad is Now Live!</h2>
@@ -43,16 +44,16 @@ export async function sendAdApprovedEmail(userEmail: string, adTitle: string) {
     </div>
   `;
 
-    return sendEmail({
-        to: userEmail,
-        subject: `Your Ad "${adTitle}" Has Been Approved!`,
-        html,
-    });
+  return sendEmail({
+    to: userEmail,
+    subject: `Your Ad "${adTitle}" Has Been Approved!`,
+    html,
+  });
 }
 
 // Ads Reject
 export async function sendAdRejectedEmail(userEmail: string, adTitle: string, reason: string) {
-    const html = `
+  const html = `
     <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f5;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 24px; border-radius: 8px;">
         <h2 style="color: #dc2626;">Action Required: Ad Rejected</h2>
@@ -65,9 +66,9 @@ export async function sendAdRejectedEmail(userEmail: string, adTitle: string, re
     </div>
   `;
 
-    return sendEmail({
-        to: userEmail,
-        subject: `Updates Required for Your Ad "${adTitle}"`,
-        html,
-    });
+  return sendEmail({
+    to: userEmail,
+    subject: `Updates Required for Your Ad "${adTitle}"`,
+    html,
+  });
 }
