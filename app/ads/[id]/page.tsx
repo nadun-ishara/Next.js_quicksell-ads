@@ -12,7 +12,7 @@ interface AdPageProps {
 
 export default async function AdPage({ params }: AdPageProps) {
   const resolvedParams = await params;
-  
+
   const ad = await prisma.advertisement.findUnique({
     where: { id: resolvedParams.id },
     include: {
@@ -37,7 +37,7 @@ export default async function AdPage({ params }: AdPageProps) {
   const primaryImage =
     ad.images.find((img) => img.isPrimary)?.filePath ||
     (ad.images.length > 0 ? ad.images[0].filePath : "/images/placeholder.jpg");
-    
+
   const otherImages = ad.images.filter((img) => img.filePath !== primaryImage);
 
   return (
@@ -45,7 +45,6 @@ export default async function AdPage({ params }: AdPageProps) {
       <Navbar />
 
       <main className="max-w-5xl mx-auto px-4 mt-8">
-        {/* Breadcrumb */}
         <div className="text-sm text-slate-500 mb-6 flex items-center gap-2">
           <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
           <span>/</span>
@@ -55,10 +54,10 @@ export default async function AdPage({ params }: AdPageProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Images & Details */}
+          {/* images and details */}
           <div className="lg:col-span-2 space-y-8">
-            
-            {/* Image Gallery */}
+
+            {/* images */}
             <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden p-2">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100">
                 <img
@@ -67,7 +66,7 @@ export default async function AdPage({ params }: AdPageProps) {
                   className="w-full h-full object-cover"
                 />
               </div>
-              
+
               {otherImages.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mt-2">
                   {otherImages.map((img) => (
@@ -83,7 +82,7 @@ export default async function AdPage({ params }: AdPageProps) {
               )}
             </div>
 
-            {/* Main Content */}
+            {/* main content */}
             <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
                 <div>
@@ -119,10 +118,8 @@ export default async function AdPage({ params }: AdPageProps) {
             </div>
           </div>
 
-          {/* Right Column: Seller Details & Actions */}
+          {/*seller details */}
           <div className="space-y-6">
-            
-            {/* Seller Card */}
             <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">
                 Seller Information
@@ -152,8 +149,7 @@ export default async function AdPage({ params }: AdPageProps) {
                 Show Phone Number
               </button>
             </div>
-            
-            {/* Safety Tips */}
+
             <div className="bg-amber-50 rounded-3xl border border-amber-200 p-6">
               <h3 className="text-sm font-bold text-amber-900 uppercase tracking-wider mb-3 flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4" />

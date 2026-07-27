@@ -87,7 +87,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
           <aside className="lg:col-span-1">
             <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm sticky top-6">
               <h2 className="text-center font-extrabold text-slate-700 tracking-wider text-xs uppercase mb-6">
-                FILTERS
+                filters
               </h2>
 
               <form action="/ads" method="GET" className="space-y-5">
@@ -97,7 +97,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                 {/* Search Keywords */}
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">
-                    SEARCH KEYWORDS
+                    search keywords
                   </label>
                   <input
                     type="text"
@@ -111,7 +111,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                 {/* Category */}
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">
-                    CATEGORY
+                    category
                   </label>
                   <select
                     name="category"
@@ -130,7 +130,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                 {/* Location */}
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">
-                    LOCATION
+                    location
                   </label>
                   <select
                     name="location"
@@ -149,7 +149,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                 {/* Price Range */}
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">
-                    PRICE RANGE
+                    price range
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <input
@@ -174,7 +174,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                   type="submit"
                   className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-3.5 rounded-xl uppercase tracking-wider transition shadow-md hover:shadow-lg cursor-pointer"
                 >
-                  APPLY FILTERS
+                  apply filters
                 </button>
 
                 {/* Clear All Filters Link */}
@@ -182,7 +182,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                   href="/ads"
                   className="block text-center text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-wider mt-4"
                 >
-                  CLEAR ALL FILTERS
+                  clear all filters
                 </Link>
               </form>
             </div>
@@ -212,7 +212,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                   <Search className="w-8 h-8 text-slate-300" />
                 </div>
                 <h3 className="text-sm font-extrabold text-slate-400 tracking-wider uppercase mb-1">
-                  NO RESULTS FOUND!
+                  no results found!
                 </h3>
                 <p className="text-xs text-slate-400">
                   Try adjusting your filters to find what you&apos;re looking for.
