@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Tag, CheckCircle2, Clock, XCircle } from "lucide-react";
+import AdActions from "./_components/AdActions";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -76,11 +77,14 @@ export default async function DashboardPage() {
                     <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">
                       Advertisement Details
                     </th>
-                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
                       Status
                     </th>
-                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
+                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
                       Price
+                    </th>
+                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
+                      Action
                     </th>
                   </tr>
                 </thead>
@@ -147,6 +151,9 @@ export default async function DashboardPage() {
                           <span className="text-sm font-extrabold text-slate-800 whitespace-nowrap">
                             LKR {Number(ad.price).toLocaleString()}
                           </span>
+                        </td>
+                        <td className="py-4 px-6 align-middle">
+                          <AdActions adId={ad.id} />
                         </td>
                       </tr>
                     );
