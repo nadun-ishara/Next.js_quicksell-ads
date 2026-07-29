@@ -36,6 +36,11 @@ export default async function EditAdPage(props: { params: Promise<{ id: string }
     orderBy: { name: "asc" },
   });
 
+  const serializedAd = {
+    ...ad,
+    price: ad.price.toNumber()
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-12">
       <Navbar />
@@ -54,7 +59,7 @@ export default async function EditAdPage(props: { params: Promise<{ id: string }
           
           {/* Form Container */}
           <div className="p-0">
-            <EditAdForm categories={categories} locations={locations} ad={ad} />
+            <EditAdForm categories={categories} locations={locations} ad={serializedAd} />
           </div>
         </div>
       </main>
