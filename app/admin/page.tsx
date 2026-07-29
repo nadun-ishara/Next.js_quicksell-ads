@@ -5,10 +5,12 @@ import { redirect } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { approveAdAction, rejectAdAction } from "@/lib/actions/admin";
+import CategoryManager from "./_components/CategoryManager";
 
 interface AdminPanelPageProps {
   searchParams: Promise<{
     status?: string;
+    tab?: string;
   }>;
 }
 
@@ -20,23 +22,36 @@ export default async function AdminPanelPage({ searchParams }: AdminPanelPagePro
   }
 
   const resolvedParams = await searchParams;
-  const currentStatus = resolvedParams.status || "PENDING";
+  const currentStatus = resolvedParams.tab || resolvedParams.status || "PENDING";
 
-  const whereClause: any = {};
-  if (currentStatus !== "ALL") {
-    whereClause.status = currentStatus;
+  let ads: any[] = [];
+  let categories: any[] = [];
+
+  if (currentStatus === "CATEGORIES") {
+    categories = await prisma.category.findMany({
+      include: {
+        parent: true,
+        children: true,
+      },
+      orderBy: { name: "asc" },
+    });
+  } else {
+    const whereClause: any = {};
+    if (currentStatus !== "ALL") {
+      whereClause.status = currentStatus;
+    }
+
+    ads = await prisma.advertisement.findMany({
+      where: whereClause,
+      include: {
+        images: true,
+        category: true,
+        user: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
   }
 
-  // Fetch advertisements based on status
-  const ads = await prisma.advertisement.findMany({
-    where: whereClause,
-    include: {
-      images: true,
-      category: true,
-      user: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
  //admin tabs 
   const tabs = ["PENDING", "APPROVED", "REJECTED", "ALL"];
 
@@ -45,29 +60,40 @@ export default async function AdminPanelPage({ searchParams }: AdminPanelPagePro
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 mt-12">
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-slate-900">Admin Panel</h1>
-          <p className="text-slate-500 mt-2">Manage all advertisements.</p>
-        </div>
+        {currentStatus === "CATEGORIES" ? (
+          <div className="mb-10">
+            <h1 className="text-3xl font-bold text-slate-900">Manage Categories</h1>
+            <p className="text-slate-500 mt-2">Create and organize advertisement categories.</p>
+          </div>
+        ) : (
+          <>
+            <div className="mb-10">
+              <h1 className="text-3xl font-bold text-slate-900">Admin Panel</h1>
+              <p className="text-slate-500 mt-2">Manage all advertisements.</p>
+            </div>
 
-        {/* tabs */}
-        <div className="flex gap-8 mb-8 border-b border-slate-200">
-          {tabs.map((tab) => (
-            <Link
-              key={tab}
-              href={`/admin?status=${tab}`}
-              className={`pb-4 text-sm font-medium transition-colors ${currentStatus === tab
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-slate-500 hover:text-slate-900"
-                }`}
-            >
-              {tab === "ALL" ? "All Ads" : `${tab.charAt(0) + tab.slice(1).toLowerCase()} Ads`}
-            </Link>
-          ))}
-        </div>
+            {/* tabs */}
+            <div className="flex gap-8 mb-8 border-b border-slate-200">
+              {tabs.map((tab) => (
+                <Link
+                  key={tab}
+                  href={`/admin?tab=${tab}`}
+                  className={`pb-4 text-sm font-medium transition-colors ${currentStatus === tab
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-slate-500 hover:text-slate-900"
+                    }`}
+                >
+                  {tab === "ALL" ? "All Ads" : `${tab.charAt(0) + tab.slice(1).toLowerCase()} Ads`}
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
 
         <div>
-          {ads.length === 0 ? (
+          {currentStatus === "CATEGORIES" ? (
+            <CategoryManager categories={categories} />
+          ) : ads.length === 0 ? (
             <div className="py-20 text-center">
               <p className="text-slate-500 text-lg">No advertisements found.</p>
             </div>
@@ -92,7 +118,7 @@ export default async function AdminPanelPage({ searchParams }: AdminPanelPagePro
                 <tbody className="divide-y divide-slate-100">
                   {ads.map((ad) => {
                     const primaryImage =
-                      ad.images.find((img) => img.isPrimary)?.filePath ||
+                      ad.images.find((img: any) => img.isPrimary)?.filePath ||
                       "/images/placeholder.jpg";
 
                     return (

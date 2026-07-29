@@ -24,7 +24,10 @@ export default function Navbar() {
             <Link href="/dashboard" className="hover:text-indigo-600 uppercase">DASHBOARD</Link>
           )}
           {(session?.user as any)?.role === "MODERATOR" && (
-            <Link href="/admin" className="hover:text-indigo-600 uppercase text-red-600">ADMIN PANEL</Link>
+            <>
+              <Link href="/admin" className="hover:text-indigo-600 uppercase text-red-600">ADMIN PANEL</Link>
+              <Link href="/admin?tab=CATEGORIES" className="hover:text-indigo-600 uppercase text-red-600">MANAGE CATEGORIES</Link>
+            </>
           )}
         </nav>
       </div>

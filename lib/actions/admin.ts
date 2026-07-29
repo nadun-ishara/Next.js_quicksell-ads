@@ -56,3 +56,48 @@ export async function rejectAdAction(formData: FormData) {
 
   revalidatePath("/admin");
 }
+
+export async function createCategoryAction(formData: FormData) {
+  if (!(await isModerator())) {
+    return { error: "Unauthorized" };
+  }
+
+  const name = formData.get("name") as string;
+  const parentId = formData.get("parentId") as string;
+
+  if (!name) return { error: "Name is required" };
+
+  let slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+  
+  const existing = await prisma.category.findUnique({ where: { slug } });
+  if (existing) {
+    slug = `${slug}-${Date.now()}`;
+  }
+
+  await prisma.category.create({
+    data: {
+      name,
+      slug,
+      parentId: parentId || null
+    }
+  });
+
+  revalidatePath("/admin");
+  return { success: true };
+}
+
+export async function deleteCategoryAction(categoryId: string) {
+  if (!(await isModerator())) {
+    return { error: "Unauthorized" };
+  }
+
+  try {
+    await prisma.category.delete({
+      where: { id: categoryId }
+    });
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (error) {
+    return { error: "Failed to delete category (it may have child elements)" };
+  }
+}
