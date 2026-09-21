@@ -11,13 +11,13 @@ import AdActions from "./_components/AdActions";
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session || !session.user) {
     redirect("/login?callbackUrl=/dashboard");
   }
 
   // Fetch advertisements for the logged in user
   const userAds = await prisma.advertisement.findMany({
-    where: { userId: session.user.id },
+    where: { userId: (session.user as any).id },
     include: {
       images: true,
       category: true,
