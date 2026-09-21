@@ -1,116 +1,116 @@
-  generator client {
-    provider = "prisma-client-js"
-    previewFeatures = ["relationJoins"]
-  }
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
 
-  datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
-  }
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
 
-  enum Role {
-    USER
-    MODERATOR
-  }
+enum Role {
+  USER
+  MODERATOR
+}
 
-  enum AdStatus {
-    PENDING
-    APPROVED
-    REJECTED
-  }
+enum AdStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
 
-  model User {
-    id String @id @default(cuid())
-    name String?
-    email String @unique
-    emailVerified DateTime?
-    image String?
-    role Role @default(USER)
-    status String @default("ACTIVE")
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(USER)
+  status        String    @default("ACTIVE")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-    advertisements Advertisement[]
-    accounts Account[]
-    sessions Session[]
-  }
+  advertisements Advertisement[]
+  accounts       Account[]
+  sessions       Session[]
+}
 
-  model Account {
-    id String @id @default(cuid())
-    userId String
-    type String
-    provider String
-    providerAccountId String
-    refresh_token String? @db.Text
-    access_token String? @db.Text
-    expires_at Int?
-    token_type String?
-    scope String?
-    id_token String? @db.Text
-    session_state String?
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    @@unique([provider, providerAccountId])
-  }
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  model Session {
-    id String @id @default(cuid())
-    sessionToken String @unique
-    userId String
-    expires DateTime
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  }
+  @@unique([provider, providerAccountId])
+}
 
-  model VerificationToken {
-    identifier String
-    token String @unique
-    expires DateTime
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
-    @@unique([identifier, token])
-  }
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-  model Category {
-    id String @id @default(cuid())
-    parentId String?
-    name String
-    slug String @unique
+  @@unique([identifier, token])
+}
 
-    parent Category? @relation("CategoryToSubcategory", fields: [parentId], references: [id], onDelete: Cascade)
-    children Category[] @relation("CategoryToSubcategory")
-    advertisements Advertisement[]
-  }
+model Category {
+  id       String  @id @default(cuid())
+  parentId String?
+  name     String
+  slug     String  @unique
 
-  model Location {
-    id String @id @default(cuid())
-    name String
-    slug String @unique
-    advertisements Advertisement[]
-  }
+  parent         Category?       @relation("CategoryToSubcategory", fields: [parentId], references: [id], onDelete: Cascade)
+  children       Category[]      @relation("CategoryToSubcategory")
+  advertisements Advertisement[]
+}
 
-  model Advertisement {
-    id String @id @default(cuid())
-    userId String
-    categoryId String
-    locationId String
-    title String
-    description String @db.Text
-    price Decimal @db.Decimal(12, 2)
-    status AdStatus @default(PENDING)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Location {
+  id             String          @id @default(cuid())
+  name           String
+  slug           String          @unique
+  advertisements Advertisement[]
+}
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    category Category @relation(fields: [categoryId], references: [id])
-    location Location @relation(fields: [locationId], references: [id])
-    images AdImage[]
-  }
+model Advertisement {
+  id          String   @id @default(cuid())
+  userId      String
+  categoryId  String
+  locationId  String
+  title       String
+  description String   @db.Text
+  price       Decimal  @db.Decimal(12, 2)
+  status      AdStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  model AdImage {
-    id String @id @default(cuid())
-    advertisementId String
-    filePath String
-    isPrimary Boolean @default(false)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category  @relation(fields: [categoryId], references: [id])
+  location Location  @relation(fields: [locationId], references: [id])
+  images   AdImage[]
+}
 
-    advertisement Advertisement @relation(fields: [advertisementId], references: [id], onDelete: Cascade)
-  }
+model AdImage {
+  id              String  @id @default(cuid())
+  advertisementId String
+  filePath        String
+  isPrimary       Boolean @default(false)
 
+  advertisement Advertisement @relation(fields: [advertisementId], references: [id], onDelete: Cascade)
+}
