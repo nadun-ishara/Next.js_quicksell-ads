@@ -9,7 +9,7 @@ export default async function EditAdPage(props: { params: Promise<{ id: string }
   const params = await props.params;
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session || !session.user) {
     redirect(`/login?callbackUrl=/ads/${params.id}/edit`);
   }
 
@@ -24,7 +24,7 @@ export default async function EditAdPage(props: { params: Promise<{ id: string }
     notFound();
   }
 
-  if (ad.userId !== session.user.id) {
+  if (ad.userId !== (session.user as any).id) {
     redirect("/dashboard");
   }
 
