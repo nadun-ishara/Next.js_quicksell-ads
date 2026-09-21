@@ -37,7 +37,16 @@ export default function EditAdForm({ categories, locations, ad }: EditAdFormProp
   const [imagePreviews, setImagePreviews] = useState<string[]>(
     ad.images.map((img) => img.filePath)
   );
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const updateFileInput = (newFiles: File[]) => {
+    if (fileInputRef.current) {
+      const dataTransfer = new DataTransfer();
+      newFiles.forEach(file => dataTransfer.items.add(file));
+      fileInputRef.current.files = dataTransfer.files;
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -48,6 +57,8 @@ export default function EditAdForm({ categories, locations, ad }: EditAdFormProp
 
       const previews = combinedFiles.map(file => URL.createObjectURL(file));
       setImagePreviews(previews);
+
+      updateFileInput(combinedFiles);
     }
   };
 
@@ -61,8 +72,39 @@ export default function EditAdForm({ categories, locations, ad }: EditAdFormProp
       const newPreviews = [...imagePreviews];
       newPreviews.splice(index, 1);
       setImagePreviews(newPreviews);
+
+      updateFileInput(newImages);
     } else {
       alert("To change existing images, please upload new ones. All new uploads will replace the current images.");
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files) {
+      const filesArray = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+      if (filesArray.length === 0) return;
+
+      const combinedFiles = filesArray.slice(0, 4); // Max 4 new images
+
+      setImages(combinedFiles);
+
+      const previews = combinedFiles.map(file => URL.createObjectURL(file));
+      setImagePreviews(previews);
+
+      updateFileInput(combinedFiles);
     }
   };
 
@@ -196,12 +238,23 @@ export default function EditAdForm({ categories, locations, ad }: EditAdFormProp
 
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="w-full border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-colors"
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`w-full border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors ${isDragging
+              ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
+              : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+            }`}
         >
-          <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-3 text-indigo-500">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-colors ${isDragging
+              ? "bg-indigo-100 text-indigo-600"
+              : "bg-indigo-50 text-indigo-500 dark:bg-indigo-900/50 dark:text-indigo-400"
+            }`}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
           </div>
-          <p className="text-sm font-bold text-slate-700 mb-1">Click to select new images</p>
+          <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
+            {isDragging ? "Drop images here" : "Click or drag to select new images"}
+          </p>
           <p className="text-[10px] text-slate-400 font-extrabold tracking-wider uppercase">NOTE: Uploading new images will replace all existing ones.</p>
 
           <input
@@ -217,9 +270,9 @@ export default function EditAdForm({ categories, locations, ad }: EditAdFormProp
 
         {/* Image Previews */}
         {imagePreviews.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+          <div className="flex flex-wrap gap-4 mt-4">
             {imagePreviews.map((preview, index) => (
-              <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 group">
+              <div key={index} className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden border border-slate-200 group flex-shrink-0">
                 <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                 <button
                   type="button"
@@ -233,9 +286,6 @@ export default function EditAdForm({ categories, locations, ad }: EditAdFormProp
           </div>
         )}
 
-        {state?.errors?.images && (
-          <p className="text-xs text-red-500 mt-2">{state.errors.images[0]}</p>
-        )}
       </div>
 
       <button
