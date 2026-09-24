@@ -25,6 +25,7 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
+  phone         String?
   role          Role      @default(USER)
   status        String    @default("ACTIVE")
   createdAt     DateTime  @default(now())
@@ -95,8 +96,13 @@ model Advertisement {
   locationId  String
   title       String
   description String   @db.Text
-  price       Decimal  @db.Decimal(12, 2)
-  status      AdStatus @default(PENDING)
+  price        Decimal  @db.Decimal(12, 2)
+  phone        String?
+  condition    String?  @default("USED")
+  isNegotiable Boolean  @default(false)
+  isSold       Boolean  @default(false)
+  isReserved   Boolean  @default(false)
+  status       AdStatus @default(PENDING)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

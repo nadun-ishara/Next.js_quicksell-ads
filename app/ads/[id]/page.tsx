@@ -37,6 +37,7 @@ export default async function AdPage({ params }: AdPageProps) {
           name: true,
           email: true,
           image: true,
+          phone: true,
           createdAt: true,
         },
       },
@@ -46,6 +47,24 @@ export default async function AdPage({ params }: AdPageProps) {
   if (!ad) {
     notFound();
   }
+
+  function formatCondition(condition?: string | null) {
+    if (!condition) return null;
+    switch (condition) {
+      case "BRAND_NEW":
+        return "Brand New";
+      case "LIKE_NEW":
+        return "Like New";
+      case "USED":
+        return "Used";
+      case "FOR_PARTS":
+        return "For Parts";
+      default:
+        return condition;
+    }
+  }
+
+  const conditionLabel = formatCondition(ad.condition);
 
   const formattedPrice = Number(ad.price).toLocaleString("en-US", {
     minimumFractionDigits: 0,
@@ -96,6 +115,40 @@ export default async function AdPage({ params }: AdPageProps) {
           </Link>
         </div>
 
+        {/* Sold / Reserved Banner */}
+        {ad.isSold && (
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md">
+            <div className="flex items-center gap-3">
+              <span className="p-2.5 bg-white/20 rounded-xl shrink-0">
+                <Tag className="w-5 h-5 text-white" />
+              </span>
+              <div>
+                <h2 className="font-extrabold text-sm uppercase tracking-wide">
+                  This Advertisement Has Been Sold
+                </h2>
+                <p className="text-xs text-red-100 mt-0.5">
+                  The seller has marked this item as sold out. You can browse other listings in {ad.category.name}.
+                </p>
+              </div>
+            </div>
+            <Link
+              href={`/ads?category=${ad.category.id}`}
+              className="text-xs font-bold bg-white text-red-700 px-4 py-2.5 rounded-xl shadow-xs hover:bg-red-50 transition shrink-0 uppercase tracking-wider text-center"
+            >
+              Browse {ad.category.name}
+            </Link>
+          </div>
+        )}
+
+        {ad.isReserved && !ad.isSold && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center gap-3 text-xs font-medium">
+            <Clock className="w-5 h-5 text-amber-600 shrink-0" />
+            <div>
+              <strong className="font-bold uppercase tracking-wider">Item Reserved:</strong> A buyer has reserved this listing. The seller may update availability soon.
+            </div>
+          </div>
+        )}
+
         {/* Two-Column Detail Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Main Column: Gallery & Description */}
@@ -128,14 +181,26 @@ export default async function AdPage({ params }: AdPageProps) {
                   {ad.title}
                 </h1>
 
-                {/* Price Display */}
-                <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-sm font-black text-indigo-600 uppercase tracking-wide">
-                    LKR
-                  </span>
-                  <span className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                    {formattedPrice}
-                  </span>
+                {/* Price & Negotiation Display */}
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm font-black text-indigo-600 uppercase tracking-wide">
+                      LKR
+                    </span>
+                    <span className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                      {formattedPrice}
+                    </span>
+                  </div>
+
+                  {ad.isNegotiable ? (
+                    <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-3 py-1 rounded-full">
+                      Price Negotiable
+                    </span>
+                  ) : (
+                    <span className="bg-slate-100 text-slate-600 border border-slate-200 text-xs font-semibold px-3 py-1 rounded-full">
+                      Fixed Price
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -154,12 +219,12 @@ export default async function AdPage({ params }: AdPageProps) {
                 <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4">
                   Overview Details
                 </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                       Category
                     </span>
-                    <span className="text-sm font-bold text-slate-800 mt-0.5 block">
+                    <span className="text-sm font-bold text-slate-800 mt-0.5 block truncate">
                       {ad.category.name}
                     </span>
                   </div>
@@ -168,19 +233,40 @@ export default async function AdPage({ params }: AdPageProps) {
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                       Location
                     </span>
-                    <span className="text-sm font-bold text-slate-800 mt-0.5 block">
+                    <span className="text-sm font-bold text-slate-800 mt-0.5 block truncate">
                       {ad.location.name}
                     </span>
                   </div>
 
+                  {conditionLabel && (
+                    <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                        Condition
+                      </span>
+                      <span className="text-sm font-bold text-indigo-600 mt-0.5 block">
+                        {conditionLabel}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                      Status
+                      Availability
                     </span>
-                    <span className="text-sm font-bold text-emerald-600 mt-0.5 flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      Verified
-                    </span>
+                    {ad.isSold ? (
+                      <span className="text-sm font-bold text-red-600 mt-0.5 block">
+                        Sold Out
+                      </span>
+                    ) : ad.isReserved ? (
+                      <span className="text-sm font-bold text-amber-600 mt-0.5 block">
+                        Reserved
+                      </span>
+                    ) : (
+                      <span className="text-sm font-bold text-emerald-600 mt-0.5 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        Available
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -231,6 +317,9 @@ export default async function AdPage({ params }: AdPageProps) {
                 adTitle={ad.title}
                 sellerName={ad.user.name || "Seller"}
                 sellerEmail={ad.user.email}
+                sellerPhone={ad.phone || (ad.user as any).phone || undefined}
+                isSold={ad.isSold}
+                isReserved={ad.isReserved}
               />
             </div>
 

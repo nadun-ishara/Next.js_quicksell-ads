@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Phone, MessageSquare, Share2, Heart, Check, Copy } from "lucide-react";
+import { Phone, MessageSquare, Share2, Heart, Check, Copy, AlertCircle, Ban } from "lucide-react";
 
 interface AdContactActionsProps {
   adId: string;
@@ -9,6 +9,8 @@ interface AdContactActionsProps {
   sellerName: string;
   sellerEmail?: string;
   sellerPhone?: string;
+  isSold?: boolean | null;
+  isReserved?: boolean | null;
 }
 
 export default function AdContactActions({
@@ -16,7 +18,9 @@ export default function AdContactActions({
   adTitle,
   sellerName,
   sellerEmail,
-  sellerPhone = "+94 77 123 4567", // Default fallback if not stored on User
+  sellerPhone = "+94 77 123 4567",
+  isSold = false,
+  isReserved = false,
 }: AdContactActionsProps) {
   const [phoneRevealed, setPhoneRevealed] = useState(false);
   const [copiedText, setCopiedText] = useState<string | null>(null);
@@ -43,6 +47,9 @@ export default function AdContactActions({
         localStorage.removeItem(`fav_${adId}`);
         setCopiedText("Removed from favorites");
       }
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("quicksell:favorites-updated"));
+      }
       setTimeout(() => setCopiedText(null), 2500);
     } catch {
       // ignore
@@ -50,6 +57,7 @@ export default function AdContactActions({
   };
 
   const handleRevealPhone = () => {
+    if (isSold) return;
     setPhoneRevealed(true);
     navigator.clipboard.writeText(sellerPhone).catch(() => {});
     setCopiedText("Phone number copied to clipboard!");
@@ -79,33 +87,48 @@ export default function AdContactActions({
         </div>
       )}
 
-      {/* WhatsApp Chat Button */}
-      <a
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 text-sm cursor-pointer"
-      >
-        <MessageSquare className="w-4 h-4 fill-white" />
-        <span>Chat on WhatsApp</span>
-      </a>
+      {/* Sold Notice */}
+      {isSold ? (
+        <div className="p-4 bg-red-50 border border-red-200/80 rounded-2xl text-center space-y-1.5">
+          <div className="flex items-center justify-center gap-1.5 text-red-700 font-extrabold text-sm">
+            <Ban className="w-4 h-4" />
+            <span>ITEM HAS BEEN SOLD</span>
+          </div>
+          <p className="text-xs text-red-600/90 leading-relaxed">
+            This item is no longer available. Contact buttons have been disabled.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* WhatsApp Chat Button */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 text-sm cursor-pointer"
+          >
+            <MessageSquare className="w-4 h-4 fill-white" />
+            <span>Chat on WhatsApp</span>
+          </a>
 
-      {/* Reveal Phone Button */}
-      <button
-        type="button"
-        onClick={handleRevealPhone}
-        className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 text-sm cursor-pointer"
-      >
-        <Phone className="w-4 h-4" />
-        {phoneRevealed ? (
-          <span className="flex items-center gap-1.5">
-            <span>{sellerPhone}</span>
-            <Copy className="w-3.5 h-3.5 opacity-70 ml-1" />
-          </span>
-        ) : (
-          <span>Show Phone Number</span>
-        )}
-      </button>
+          {/* Reveal Phone Button */}
+          <button
+            type="button"
+            onClick={handleRevealPhone}
+            className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 text-sm cursor-pointer"
+          >
+            <Phone className="w-4 h-4" />
+            {phoneRevealed ? (
+              <span className="flex items-center gap-1.5">
+                <span>{sellerPhone}</span>
+                <Copy className="w-3.5 h-3.5 opacity-70 ml-1" />
+              </span>
+            ) : (
+              <span>Show Phone Number</span>
+            )}
+          </button>
+        </>
+      )}
 
       {/* Actions Row: Share & Favorite */}
       <div className="grid grid-cols-2 gap-2 pt-1">
