@@ -2,13 +2,41 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Zap, ChevronDown, LogOut, LayoutDashboard, Shield, Menu, X, PlusCircle, User as UserIcon } from "lucide-react";
-import { useState } from "react";
+import { Zap, ChevronDown, LogOut, LayoutDashboard, Shield, Menu, X, PlusCircle, User as UserIcon, Heart } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [savedCount, setSavedCount] = useState<number>(0);
+
+  useEffect(() => {
+    const updateSavedCount = () => {
+      try {
+        let count = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith("fav_") && localStorage.getItem(key)) {
+            count++;
+          }
+        }
+        setSavedCount(count);
+      } catch {
+        // ignore
+      }
+    };
+
+    updateSavedCount();
+
+    window.addEventListener("quicksell:favorites-updated", updateSavedCount);
+    window.addEventListener("storage", updateSavedCount);
+
+    return () => {
+      window.removeEventListener("quicksell:favorites-updated", updateSavedCount);
+      window.removeEventListener("storage", updateSavedCount);
+    };
+  }, []);
 
   const isModerator = (session?.user as any)?.role === "MODERATOR";
   const userInitials = (session?.user?.name || session?.user?.email || "U")
@@ -82,14 +110,29 @@ export default function Navbar() {
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Saved Ads / Favorites Link with Live Counter */}
+          <Link
+            href="/favorites"
+            className="relative p-2.5 rounded-xl text-slate-600 hover:text-rose-600 hover:bg-rose-50/70 transition-all flex items-center justify-center cursor-pointer group"
+            title="Saved Ads"
+          >
+            <Heart className="w-5 h-5 transition-transform group-hover:scale-110" />
+            {savedCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-black rounded-full h-4 min-w-[16px] px-1 flex items-center justify-center shadow-xs">
+                {savedCount > 99 ? "99+" : savedCount}
+              </span>
+            )}
+          </Link>
+
           {/* Post Your Ad Button */}
           <Link
             href={session ? "/ads/create" : "/login?callbackUrl=/ads/create"}
-            className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs font-bold px-4 md:px-5 py-2.5 rounded-full shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all tracking-wider uppercase"
+            className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs font-bold px-3.5 sm:px-5 py-2.5 rounded-full shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all tracking-wider uppercase"
           >
             <PlusCircle className="w-4 h-4 transition-transform group-hover:rotate-90 duration-300" />
-            <span>Post Ad</span>
+            <span className="hidden sm:inline">Post Ad</span>
+            <span className="sm:hidden">Post</span>
           </Link>
 
           {/* User Profile / Login */}
@@ -144,6 +187,22 @@ export default function Navbar() {
                     >
                       <LayoutDashboard className="w-4 h-4 text-slate-400" />
                       My Dashboard & Ads
+                    </Link>
+
+                    <Link
+                      href="/favorites"
+                      onClick={() => setDropdownOpen(false)}
+                      className="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-rose-50/70 hover:text-rose-600 flex items-center justify-between transition-colors font-medium"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <Heart className="w-4 h-4 text-rose-500" />
+                        Saved Ads
+                      </span>
+                      {savedCount > 0 && (
+                        <span className="text-[10px] font-bold bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full border border-rose-100">
+                          {savedCount}
+                        </span>
+                      )}
                     </Link>
 
                     {isModerator && (
@@ -207,6 +266,21 @@ export default function Navbar() {
               className="px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition"
             >
               Browse All Ads
+            </Link>
+            <Link
+              href="/favorites"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-3 py-2 rounded-lg hover:bg-rose-50 hover:text-rose-600 transition flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <Heart className="w-4 h-4 text-rose-500" />
+                Saved Ads
+              </span>
+              {savedCount > 0 && (
+                <span className="text-xs font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">
+                  {savedCount}
+                </span>
+              )}
             </Link>
             {session && (
               <Link

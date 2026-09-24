@@ -2,6 +2,7 @@
 
 import { useActionState, useState, useRef, useEffect } from "react";
 import { updateAdAction } from "@/lib/actions/ad";
+import { AD_CONDITIONS } from "@/lib/validations/ad";
 
 interface Category {
   id: string;
@@ -18,6 +19,9 @@ interface Advertisement {
   title: string;
   description: string;
   price: any;
+  phone?: string | null;
+  condition?: string | null;
+  isNegotiable?: boolean | null;
   categoryId: string;
   locationId: string;
   images: { filePath: string; isPrimary: boolean }[];
@@ -32,6 +36,7 @@ interface EditAdFormProps {
 export default function EditAdForm({ categories, locations, ad }: EditAdFormProps) {
   const updateAdActionWithId = updateAdAction.bind(null, ad.id);
   const [state, formAction, isPending] = useActionState(updateAdActionWithId, null);
+  const [selectedCondition, setSelectedCondition] = useState<string>(ad.condition || "USED");
   const [images, setImages] = useState<File[]>([]);
   //use existing images
   const [imagePreviews, setImagePreviews] = useState<string[]>(
@@ -194,22 +199,98 @@ export default function EditAdForm({ categories, locations, ad }: EditAdFormProp
         </div>
       </div>
 
+      {/* Price & Negotiable */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-end">
+        <div>
+          <label htmlFor="price" className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">
+            Price (LKR) <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            id="price"
+            name="price"
+            required
+            defaultValue={ad.price.toString()}
+            placeholder="e.g. 150000"
+            className="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition-all"
+          />
+          {state?.errors?.price && (
+            <p className="text-xs text-red-500 mt-1">{state.errors.price[0]}</p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer">
+          <input
+            type="checkbox"
+            id="isNegotiable"
+            name="isNegotiable"
+            value="true"
+            defaultChecked={Boolean(ad.isNegotiable)}
+            className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
+          />
+          <label htmlFor="isNegotiable" className="text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+            Price is Negotiable
+          </label>
+        </div>
+      </div>
+
+      {/* Phone Number */}
       <div>
-        <label htmlFor="price" className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">
-          Price (LKR) <span className="text-red-500">*</span>
+        <label htmlFor="phone" className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">
+          Contact Phone Number <span className="text-red-500">*</span>
         </label>
-        <input
-          type="number"
-          step="0.01"
-          id="price"
-          name="price"
-          required
-          defaultValue={ad.price.toString()}
-          placeholder="e.g. 150000"
-          className="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition-all"
-        />
-        {state?.errors?.price && (
-          <p className="text-xs text-red-500 mt-1">{state.errors.price[0]}</p>
+        <div className="relative">
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            required
+            defaultValue={ad.phone || ""}
+            placeholder="e.g. +94 77 123 4567 or 0771234567"
+            className="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition-all"
+          />
+        </div>
+        <p className="text-[11px] text-slate-400 mt-1">
+          Buyers will use this number to contact you via Call and WhatsApp.
+        </p>
+        {state?.errors?.phone && (
+          <p className="text-xs text-red-500 mt-1">{state.errors.phone[0]}</p>
+        )}
+      </div>
+
+      {/* Item Condition */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
+          Item Condition <span className="text-red-500">*</span>
+        </label>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {AD_CONDITIONS.map((cond) => (
+            <label
+              key={cond.value}
+              className={`flex flex-col p-3 border rounded-xl cursor-pointer transition-all ${
+                selectedCondition === cond.value
+                  ? "border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/40 ring-2 ring-indigo-500/20"
+                  : "border-slate-200 dark:border-slate-700 hover:border-slate-300 bg-white dark:bg-slate-800"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-slate-800 dark:text-white">{cond.label}</span>
+                <input
+                  type="radio"
+                  name="condition"
+                  value={cond.value}
+                  checked={selectedCondition === cond.value}
+                  onChange={() => setSelectedCondition(cond.value)}
+                  className="w-3.5 h-3.5 text-indigo-600"
+                />
+              </div>
+              <span className="text-[10px] text-slate-400 line-clamp-1">{cond.description}</span>
+            </label>
+          ))}
+        </div>
+        {state?.errors?.condition && (
+          <p className="text-xs text-red-500 mt-1">{state.errors.condition[0]}</p>
         )}
       </div>
 

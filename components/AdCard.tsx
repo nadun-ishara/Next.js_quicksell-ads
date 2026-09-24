@@ -10,6 +10,11 @@ interface AdCardProps {
     title: string;
     description?: string;
     price: number | string | any;
+    phone?: string | null;
+    condition?: string | null;
+    isNegotiable?: boolean | null;
+    isSold?: boolean | null;
+    isReserved?: boolean | null;
     createdAt: Date | string;
     category: { name: string };
     location: { name: string };
@@ -27,6 +32,22 @@ function timeAgo(dateInput: Date | string) {
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
   if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function formatCondition(condition?: string | null) {
+  if (!condition) return null;
+  switch (condition) {
+    case "BRAND_NEW":
+      return "Brand New";
+    case "LIKE_NEW":
+      return "Like New";
+    case "USED":
+      return "Used";
+    case "FOR_PARTS":
+      return "For Parts";
+    default:
+      return condition;
+  }
 }
 
 export default function AdCard({ ad }: AdCardProps) {
@@ -52,6 +73,9 @@ export default function AdCard({ ad }: AdCardProps) {
       } else {
         localStorage.removeItem(`fav_${ad.id}`);
       }
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("quicksell:favorites-updated"));
+      }
     } catch {
       // ignore
     }
@@ -66,22 +90,46 @@ export default function AdCard({ ad }: AdCardProps) {
     maximumFractionDigits: 2,
   });
 
+  const conditionLabel = formatCondition(ad.condition);
+
   return (
     <Link
       href={`/ads/${ad.id}`}
-      className="group bg-white rounded-2xl border border-slate-200/80 hover:border-indigo-200 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer relative"
+      className={`group bg-white rounded-2xl border border-slate-200/80 hover:border-indigo-200 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer relative ${
+        ad.isSold ? "opacity-85" : ""
+      }`}
     >
       {/* Image Container */}
       <div className="relative aspect-[16/11] w-full bg-slate-100 overflow-hidden">
         <img
           src={primaryImage}
           alt={ad.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out ${
+            ad.isSold ? "grayscale-[40%]" : ""
+          }`}
           loading="lazy"
         />
 
+        {/* Sold Overlay */}
+        {ad.isSold && (
+          <div className="absolute inset-0 bg-slate-950/65 backdrop-blur-[1px] flex items-center justify-center z-10 pointer-events-none">
+            <span className="bg-red-600 text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-xl border border-red-400 rotate-[-6deg]">
+              SOLD OUT
+            </span>
+          </div>
+        )}
+
+        {/* Reserved Badge */}
+        {ad.isReserved && !ad.isSold && (
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+            <span className="bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md border border-amber-300">
+              RESERVED
+            </span>
+          </div>
+        )}
+
         {/* Top Badges Overlay */}
-        <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between pointer-events-none">
+        <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between pointer-events-none z-10">
           {/* Category Pill */}
           <span className="bg-slate-900/70 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-white/10 shadow-sm">
             {ad.category.name}
@@ -107,11 +155,19 @@ export default function AdCard({ ad }: AdCardProps) {
         </div>
 
         {/* Bottom Badges Overlay */}
-        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-2">
-          {ad.images.length > 1 && (
+        <div className="absolute bottom-2.5 inset-x-2.5 flex items-center justify-between pointer-events-none z-10">
+          {ad.images.length > 1 ? (
             <span className="flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-0.5 rounded-md">
               <Camera className="w-3 h-3" />
               {ad.images.length}
+            </span>
+          ) : (
+            <div />
+          )}
+
+          {conditionLabel && (
+            <span className="bg-white/90 backdrop-blur-sm text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-200 shadow-sm">
+              {conditionLabel}
             </span>
           )}
         </div>
@@ -146,14 +202,21 @@ export default function AdCard({ ad }: AdCardProps) {
         </div>
 
         {/* Price Row */}
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-baseline justify-between">
-          <div className="flex items-baseline gap-1">
-            <span className="text-xs font-extrabold text-indigo-600 uppercase">
-              LKR
-            </span>
-            <span className="text-lg font-black text-slate-900 tracking-tight">
-              {formattedPrice}
-            </span>
+        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-1">
+              <span className="text-xs font-extrabold text-indigo-600 uppercase">
+                LKR
+              </span>
+              <span className="text-lg font-black text-slate-900 tracking-tight">
+                {formattedPrice}
+              </span>
+            </div>
+            {ad.isNegotiable && (
+              <span className="text-[10px] font-semibold text-emerald-600 -mt-0.5">
+                Negotiable
+              </span>
+            )}
           </div>
           <span className="text-[11px] font-semibold text-indigo-600 group-hover:translate-x-0.5 transition-transform flex items-center">
             View &rarr;

@@ -128,24 +128,44 @@ export default async function DashboardPage() {
                           </div>
                         </td>
                         <td className="py-4 px-6 align-middle">
-                          {ad.status === "APPROVED" && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-50 text-green-700 text-[11px] font-bold uppercase tracking-wider border border-green-200 whitespace-nowrap">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              Approved
-                            </span>
-                          )}
-                          {ad.status === "PENDING" && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 text-[11px] font-bold uppercase tracking-wider border border-amber-200 whitespace-nowrap">
-                              <Clock className="w-3.5 h-3.5" />
-                              Pending
-                            </span>
-                          )}
-                          {ad.status === "REJECTED" && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-50 text-red-700 text-[11px] font-bold uppercase tracking-wider border border-red-200 whitespace-nowrap">
-                              <XCircle className="w-3.5 h-3.5" />
-                              Rejected
-                            </span>
-                          )}
+                          <div className="flex flex-col gap-1.5 items-start">
+                            {/* Moderation Status */}
+                            {ad.status === "APPROVED" && (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider border border-green-200 whitespace-nowrap">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Approved
+                              </span>
+                            )}
+                            {ad.status === "PENDING" && (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider border border-amber-200 whitespace-nowrap">
+                                <Clock className="w-3 h-3" />
+                                In Review
+                              </span>
+                            )}
+                            {ad.status === "REJECTED" && (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-red-50 text-red-700 text-[10px] font-bold uppercase tracking-wider border border-red-200 whitespace-nowrap">
+                                <XCircle className="w-3 h-3" />
+                                Rejected
+                              </span>
+                            )}
+
+                            {/* Sale Status */}
+                            {ad.isSold ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black uppercase bg-red-600 text-white tracking-wider shadow-xs">
+                                Sold Out
+                              </span>
+                            ) : ad.isReserved ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black uppercase bg-amber-500 text-slate-950 tracking-wider shadow-xs">
+                                Reserved
+                              </span>
+                            ) : (
+                              ad.status === "APPROVED" && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 text-slate-600 tracking-wider">
+                                  Available
+                                </span>
+                              )
+                            )}
+                          </div>
                         </td>
                         <td className="py-4 px-6 align-middle text-right">
                           <span className="text-sm font-extrabold text-slate-800 whitespace-nowrap">
@@ -153,7 +173,7 @@ export default async function DashboardPage() {
                           </span>
                         </td>
                         <td className="py-4 px-6 align-middle">
-                          <AdActions adId={ad.id} />
+                          <AdActions adId={ad.id} isSold={ad.isSold} isReserved={ad.isReserved} />
                         </td>
                       </tr>
                     );

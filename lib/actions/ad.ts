@@ -21,6 +21,9 @@ export async function createAdAction(prevState: any, formData: FormData) {
     title: formData.get("title"),
     description: formData.get("description"),
     price: formData.get("price"),
+    phone: formData.get("phone"),
+    condition: formData.get("condition"),
+    isNegotiable: formData.get("isNegotiable"),
     categoryId: formData.get("categoryId"),
     locationId: formData.get("locationId"),
   };
@@ -48,7 +51,7 @@ export async function createAdAction(prevState: any, formData: FormData) {
     };
   }
 
-  const { title, description, price, categoryId, locationId } = validation.data;
+  const { title, description, price, phone, condition, isNegotiable, categoryId, locationId } = validation.data;
 
   let savedImageUrls: string[] = [];
 
@@ -69,6 +72,9 @@ export async function createAdAction(prevState: any, formData: FormData) {
         title,
         description,
         price: parseFloat(price),
+        phone,
+        condition,
+        isNegotiable,
         categoryId,
         locationId,
         status: "PENDING",
@@ -80,6 +86,12 @@ export async function createAdAction(prevState: any, formData: FormData) {
         },
       },
     });
+
+    // Update user's default phone if they don't have one
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { phone },
+    }).catch(() => {});
   } catch (error) {
     console.error("DB Error:", error);
     return {
@@ -113,6 +125,9 @@ export async function updateAdAction(adId: string, prevState: any, formData: For
     title: formData.get("title"),
     description: formData.get("description"),
     price: formData.get("price"),
+    phone: formData.get("phone"),
+    condition: formData.get("condition"),
+    isNegotiable: formData.get("isNegotiable"),
     categoryId: formData.get("categoryId"),
     locationId: formData.get("locationId"),
   };
@@ -134,15 +149,18 @@ export async function updateAdAction(adId: string, prevState: any, formData: For
     };
   }
 
-  const { title, description, price, categoryId, locationId } = validation.data;
+  const { title, description, price, phone, condition, isNegotiable, categoryId, locationId } = validation.data;
 
   let updateData: any = {
     title,
     description,
     price: parseFloat(price),
+    phone,
+    condition,
+    isNegotiable,
     categoryId,
     locationId,
-    status: "PENDING", //require re approve
+    status: "PENDING", // require re-approve
   };
 
   if (validImages.length > 0) {
@@ -213,4 +231,107 @@ export async function deleteAdAction(adId: string) {
   }
 
   revalidatePath("/dashboard");
+}
+
+export async function toggleAdSoldAction(adId: string) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { error: "You must be logged in." };
+  }
+
+  const ad = await prisma.advertisement.findUnique({
+    where: { id: adId },
+  });
+
+  if (!ad) {
+    return { error: "Ad not found." };
+  }
+
+  if (ad.userId !== session.user.id) {
+    return { error: "Unauthorized." };
+  }
+
+  const nextSold = !ad.isSold;
+
+  await prisma.advertisement.update({
+    where: { id: adId },
+    data: {
+      isSold: nextSold,
+      ...(nextSold ? { isReserved: false } : {}),
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/ads");
+  revalidatePath(`/ads/${adId}`);
+
+  return { success: true, isSold: nextSold };
+}
+
+export async function toggleAdReservedAction(adId: string) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { error: "You must be logged in." };
+  }
+
+  const ad = await prisma.advertisement.findUnique({
+    where: { id: adId },
+  });
+
+  if (!ad) {
+    return { error: "Ad not found." };
+  }
+
+  if (ad.userId !== session.user.id) {
+    return { error: "Unauthorized." };
+  }
+
+  const nextReserved = !ad.isReserved;
+
+  await prisma.advertisement.update({
+    where: { id: adId },
+    data: {
+      isReserved: nextReserved,
+      ...(nextReserved ? { isSold: false } : {}),
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/ads");
+  revalidatePath(`/ads/${adId}`);
+
+  return { success: true, isReserved: nextReserved };
+}
+
+export async function getSavedAdsAction(adIds: string[]) {
+  if (!adIds || adIds.length === 0) {
+    return [];
+  }
+
+  try {
+    const ads = await prisma.advertisement.findMany({
+      where: {
+        id: { in: adIds },
+        status: "APPROVED",
+      },
+      include: {
+        images: true,
+        category: true,
+        location: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return ads.map((ad) => ({
+      ...ad,
+      price: Number(ad.price),
+    }));
+  } catch (error) {
+    console.error("Error fetching saved ads:", error);
+    return [];
+  }
 }
