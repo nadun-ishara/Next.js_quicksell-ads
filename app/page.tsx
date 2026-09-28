@@ -17,7 +17,6 @@ import {
   Bike,
   ShieldCheck,
   Sparkles,
-  Users,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import HeroSearch from "@/components/HeroSearch";
@@ -32,30 +31,30 @@ interface HomePageProps {
 }
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  Vehicles: <Car className="text-blue-600 w-6 h-6" />,
-  Cars: <Car className="text-blue-600 w-6 h-6" />,
-  Motorbikes: <Bike className="text-rose-600 w-6 h-6" />,
-  Electronics: <Smartphone className="text-amber-600 w-6 h-6" />,
-  Laptops: <Laptop className="text-indigo-600 w-6 h-6" />,
-  "Mobile Phones": <Smartphone className="text-teal-600 w-6 h-6" />,
-  Property: <Home className="text-emerald-600 w-6 h-6" />,
-  Jobs: <Briefcase className="text-purple-600 w-6 h-6" />,
-  Pets: <Dog className="text-orange-600 w-6 h-6" />,
-  Services: <Wrench className="text-cyan-600 w-6 h-6" />,
-  Other: <MoreHorizontal className="text-slate-600 w-6 h-6" />,
+  Vehicles: <Car className="text-blue-600 dark:text-blue-400 w-6 h-6" />,
+  Cars: <Car className="text-blue-600 dark:text-blue-400 w-6 h-6" />,
+  Motorbikes: <Bike className="text-rose-600 dark:text-rose-400 w-6 h-6" />,
+  Electronics: <Smartphone className="text-amber-600 dark:text-amber-400 w-6 h-6" />,
+  Laptops: <Laptop className="text-indigo-600 dark:text-indigo-400 w-6 h-6" />,
+  "Mobile Phones": <Smartphone className="text-teal-600 dark:text-teal-400 w-6 h-6" />,
+  Property: <Home className="text-emerald-600 dark:text-emerald-400 w-6 h-6" />,
+  Jobs: <Briefcase className="text-purple-600 dark:text-purple-400 w-6 h-6" />,
+  Pets: <Dog className="text-orange-600 dark:text-orange-400 w-6 h-6" />,
+  Services: <Wrench className="text-cyan-600 dark:text-cyan-400 w-6 h-6" />,
+  Other: <MoreHorizontal className="text-slate-600 dark:text-slate-400 w-6 h-6" />,
 };
 
-const CATEGORY_TINTS: Record<string, { bg: string; hoverBorder: string }> = {
-  Vehicles: { bg: "bg-blue-50 text-blue-600", hoverBorder: "group-hover:border-blue-300" },
-  Cars: { bg: "bg-blue-50 text-blue-600", hoverBorder: "group-hover:border-blue-300" },
-  Motorbikes: { bg: "bg-rose-50 text-rose-600", hoverBorder: "group-hover:border-rose-300" },
-  Electronics: { bg: "bg-amber-50 text-amber-600", hoverBorder: "group-hover:border-amber-300" },
-  Laptops: { bg: "bg-indigo-50 text-indigo-600", hoverBorder: "group-hover:border-indigo-300" },
-  "Mobile Phones": { bg: "bg-teal-50 text-teal-600", hoverBorder: "group-hover:border-teal-300" },
-  Property: { bg: "bg-emerald-50 text-emerald-600", hoverBorder: "group-hover:border-emerald-300" },
-  Jobs: { bg: "bg-purple-50 text-purple-600", hoverBorder: "group-hover:border-purple-300" },
-  Pets: { bg: "bg-orange-50 text-orange-600", hoverBorder: "group-hover:border-orange-300" },
-  Services: { bg: "bg-cyan-50 text-cyan-600", hoverBorder: "group-hover:border-cyan-300" },
+const CATEGORY_TINTS: Record<string, { bg: string; darkBg: string; hoverBorder: string }> = {
+  Vehicles: { bg: "bg-blue-50 text-blue-600", darkBg: "dark:bg-blue-950/60 dark:text-blue-400", hoverBorder: "group-hover:border-blue-300 dark:group-hover:border-blue-500/50" },
+  Cars: { bg: "bg-blue-50 text-blue-600", darkBg: "dark:bg-blue-950/60 dark:text-blue-400", hoverBorder: "group-hover:border-blue-300 dark:group-hover:border-blue-500/50" },
+  Motorbikes: { bg: "bg-rose-50 text-rose-600", darkBg: "dark:bg-rose-950/60 dark:text-rose-400", hoverBorder: "group-hover:border-rose-300 dark:group-hover:border-rose-500/50" },
+  Electronics: { bg: "bg-amber-50 text-amber-600", darkBg: "dark:bg-amber-950/60 dark:text-amber-400", hoverBorder: "group-hover:border-amber-300 dark:group-hover:border-amber-500/50" },
+  Laptops: { bg: "bg-indigo-50 text-indigo-600", darkBg: "dark:bg-indigo-950/60 dark:text-indigo-400", hoverBorder: "group-hover:border-indigo-300 dark:group-hover:border-indigo-500/50" },
+  "Mobile Phones": { bg: "bg-teal-50 text-teal-600", darkBg: "dark:bg-teal-950/60 dark:text-teal-400", hoverBorder: "group-hover:border-teal-300 dark:group-hover:border-teal-500/50" },
+  Property: { bg: "bg-emerald-50 text-emerald-600", darkBg: "dark:bg-emerald-950/60 dark:text-emerald-400", hoverBorder: "group-hover:border-emerald-300 dark:group-hover:border-emerald-500/50" },
+  Jobs: { bg: "bg-purple-50 text-purple-600", darkBg: "dark:bg-purple-950/60 dark:text-purple-400", hoverBorder: "group-hover:border-purple-300 dark:group-hover:border-purple-500/50" },
+  Pets: { bg: "bg-orange-50 text-orange-600", darkBg: "dark:bg-orange-950/60 dark:text-orange-400", hoverBorder: "group-hover:border-orange-300 dark:group-hover:border-orange-500/50" },
+  Services: { bg: "bg-cyan-50 text-cyan-600", darkBg: "dark:bg-cyan-950/60 dark:text-cyan-400", hoverBorder: "group-hover:border-cyan-300 dark:group-hover:border-cyan-500/50" },
 };
 
 export default async function HomePage({ searchParams }: HomePageProps) {
@@ -100,20 +99,20 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   ]);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 transition-colors">
       <Navbar />
 
       {/* Hero Section with Mesh Gradient & Capsule Search */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#311496] via-[#431fb8] to-[#5527d4] text-white pt-20 pb-28 px-4 md:px-8">
-        {/* Decorative Background Lighting Circles */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-indigo-500/20 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute -top-10 -right-20 w-96 h-96 bg-violet-400/20 blur-[100px] rounded-full pointer-events-none" />
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#1e105e] via-[#311496] to-[#431fb8] text-white pt-20 pb-28 px-4 md:px-8">
+        {/* Decorative Background Lighting Circles with Keyframe Pulse */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-indigo-500/20 blur-[120px] rounded-full pointer-events-none animate-pulse-glow" />
+        <div className="absolute -top-10 -right-20 w-96 h-96 bg-violet-400/20 blur-[100px] rounded-full pointer-events-none animate-pulse-glow" />
 
         <div className="relative max-w-5xl mx-auto flex flex-col items-center text-center">
           {/* Top Pill Announcement */}
           <div className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-xs font-semibold text-indigo-100 mb-6 shadow-sm">
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>Sri Lanka&apos;s Fastest Growing Classifieds</span>
+            <span>Sri Lanka&apos;s Premier Classifieds Portal</span>
           </div>
 
           {/* Heading */}
@@ -125,10 +124,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </h1>
 
           <p className="text-indigo-100/90 text-sm sm:text-base mb-10 max-w-xl font-normal leading-relaxed">
-            Discover verified cars, mobile phones, laptops, and properties from trusted sellers across Sri Lanka.
+            Discover verified vehicles, electronics, mobile phones, and real estate from trusted local sellers across Sri Lanka.
           </p>
 
-          {/* Unified Search Capsule Component */}
+          {/* Search Capsule Component */}
           <HeroSearch
             categories={categories}
             locations={locations}
@@ -163,16 +162,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <section className="mb-20">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600">
+              <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
                 Explore
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
                 Browse by Category
               </h2>
             </div>
             <Link
               href="/ads"
-              className="text-xs sm:text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors"
+              className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 flex items-center gap-1 transition-colors"
             >
               <span>View All</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -183,28 +182,29 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             {categories.map((cat) => {
               const tint = CATEGORY_TINTS[cat.name] || {
                 bg: "bg-indigo-50 text-indigo-600",
-                hoverBorder: "group-hover:border-indigo-300",
+                darkBg: "dark:bg-indigo-950/60 dark:text-indigo-400",
+                hoverBorder: "group-hover:border-indigo-300 dark:group-hover:border-indigo-500/50",
               };
 
               return (
                 <Link
                   key={cat.id}
                   href={`/ads?category=${cat.id}`}
-                  className={`group bg-white border border-slate-200/80 ${tint.hoverBorder} rounded-3xl p-5 flex flex-col items-center text-center shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer relative overflow-hidden`}
+                  className={`group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 ${tint.hoverBorder} rounded-3xl p-5 flex flex-col items-center text-center shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer relative overflow-hidden`}
                 >
                   <div
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center ${tint.bg} group-hover:scale-110 transition-transform duration-300 shadow-xs mb-3.5`}
+                    className={`w-14 h-14 rounded-2xl flex items-center justify-center ${tint.bg} ${tint.darkBg} group-hover:scale-110 transition-transform duration-300 shadow-xs mb-3.5`}
                   >
                     {CATEGORY_ICONS[cat.name] || (
-                      <MoreHorizontal className="w-6 h-6 text-indigo-600" />
+                      <MoreHorizontal className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                     )}
                   </div>
 
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors line-clamp-1">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
                     {cat.name}
                   </h3>
 
-                  <span className="mt-2 text-[10px] font-semibold text-slate-500 bg-slate-100 group-hover:bg-indigo-50 group-hover:text-indigo-600 px-2.5 py-0.5 rounded-full transition-colors">
+                  <span className="mt-2 text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 px-2.5 py-0.5 rounded-full transition-colors">
                     {cat._count.advertisements} {cat._count.advertisements === 1 ? "ad" : "ads"}
                   </span>
                 </Link>
@@ -217,16 +217,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <section>
           <div className="flex items-end justify-between mb-8">
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600">
+              <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
                 Fresh Listings
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
                 Latest Advertisements
               </h2>
             </div>
             <Link
               href="/ads"
-              className="text-xs sm:text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors"
+              className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 flex items-center gap-1 transition-colors"
             >
               <span>See All Ads</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -234,14 +234,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </div>
 
           {ads.length === 0 ? (
-            <div className="text-center py-20 bg-white border border-dashed border-slate-200 rounded-3xl p-8">
-              <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center py-20 bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-8">
+              <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-8 h-8" />
               </div>
-              <h3 className="text-lg font-bold text-slate-800 mb-1">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">
                 No Advertisements Yet
               </h3>
-              <p className="text-slate-500 text-sm max-w-md mx-auto mb-6">
+              <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto mb-6">
                 Be the first to list an item for sale in your area and get noticed by thousands of eager buyers.
               </p>
               <Link

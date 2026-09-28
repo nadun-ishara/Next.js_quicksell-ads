@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Search, SlidersHorizontal, RotateCcw, Sparkles } from "lucide-react";
+import { Search, SlidersHorizontal, RotateCcw } from "lucide-react";
 import SortSelect from "@/components/SortSelect";
 import Navbar from "@/components/Navbar";
 import AdCard from "@/components/AdCard";
@@ -77,9 +77,11 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
   ]);
 
   const hasActiveFilters = Boolean(query || categoryId || locationId || minPrice || maxPrice);
+  const activeCategory = categories.find((c) => c.id === categoryId);
+  const activeLocation = locations.find((l) => l.id === locationId);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-16">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 pb-16 transition-colors">
       <Navbar />
 
       {/* Main Container */}
@@ -87,11 +89,11 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Sidebar Filters */}
           <aside className="lg:col-span-1">
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm sticky top-24">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-sm sticky top-24">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="w-4 h-4 text-indigo-600" />
-                  <h2 className="font-extrabold text-slate-900 tracking-wider text-xs uppercase">
+                  <SlidersHorizontal className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <h2 className="font-extrabold text-slate-900 dark:text-slate-100 tracking-wider text-xs uppercase">
                     Filter Ads
                   </h2>
                 </div>
@@ -112,7 +114,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
 
                 {/* Search Keywords */}
                 <div>
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                  <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 block">
                     Keyword
                   </label>
                   <input
@@ -120,19 +122,19 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                     name="q"
                     defaultValue={query}
                     placeholder="Search keywords..."
-                    className="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 w-full outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-400"
+                    className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 dark:text-slate-100 w-full outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-600"
                   />
                 </div>
 
                 {/* Category */}
                 <div>
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                  <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 block">
                     Category
                   </label>
                   <select
                     name="category"
                     defaultValue={categoryId}
-                    className="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 w-full outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors cursor-pointer"
+                    className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 dark:text-slate-100 w-full outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-500 transition-colors cursor-pointer"
                   >
                     <option value="">All Categories</option>
                     {categories.map((cat) => (
@@ -145,13 +147,13 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
 
                 {/* Location */}
                 <div>
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                  <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 block">
                     Location
                   </label>
                   <select
                     name="location"
                     defaultValue={locationId}
-                    className="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 w-full outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors cursor-pointer"
+                    className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 dark:text-slate-100 w-full outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-500 transition-colors cursor-pointer"
                   >
                     <option value="">All Locations</option>
                     {locations.map((loc) => (
@@ -164,7 +166,7 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
 
                 {/* Price Range */}
                 <div>
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                  <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 block">
                     Price Range (LKR)
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -173,14 +175,14 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
                       name="minPrice"
                       defaultValue={minPrice}
                       placeholder="Min"
-                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-800 w-full outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-400"
+                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-800 dark:text-slate-100 w-full outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-600"
                     />
                     <input
                       type="number"
                       name="maxPrice"
                       defaultValue={maxPrice}
                       placeholder="Max"
-                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-800 w-full outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-400"
+                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-800 dark:text-slate-100 w-full outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-600"
                     />
                   </div>
                 </div>
@@ -201,14 +203,40 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
           {/* Right Main Search Results Section */}
           <section className="lg:col-span-3">
             {/* Header Row */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
               <div>
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                   {query ? `Search Results for "${query}"` : "Browse Advertisements"}
                 </h1>
-                <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                  Showing <span className="text-indigo-600 font-bold">{ads.length}</span> {ads.length === 1 ? "ad" : "ads"} available
+                <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-0.5">
+                  Showing <span className="text-indigo-600 dark:text-indigo-400 font-bold">{ads.length}</span> {ads.length === 1 ? "ad" : "ads"} available
                 </p>
+
+                {/* Active Filters Pill Chips */}
+                {hasActiveFilters && (
+                  <div className="flex flex-wrap items-center gap-1.5 mt-3">
+                    {query && (
+                      <span className="bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/60">
+                        Keyword: {query}
+                      </span>
+                    )}
+                    {activeCategory && (
+                      <span className="bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/60">
+                        Category: {activeCategory.name}
+                      </span>
+                    )}
+                    {activeLocation && (
+                      <span className="bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/60">
+                        Location: {activeLocation.name}
+                      </span>
+                    )}
+                    {(minPrice || maxPrice) && (
+                      <span className="bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/60">
+                        Price: {minPrice || "0"} - {maxPrice || "Max"}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Sort Controls */}
@@ -217,19 +245,19 @@ export default async function AdsPage({ searchParams }: AdsPageProps) {
 
             {/* Results Grid or Empty State */}
             {ads.length === 0 ? (
-              <div className="bg-white border-2 border-dashed border-slate-200 rounded-3xl p-14 text-center flex flex-col items-center justify-center min-h-[380px] shadow-xs">
-                <div className="w-16 h-16 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4">
+              <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-14 text-center flex flex-col items-center justify-center min-h-[380px] shadow-xs">
+                <div className="w-16 h-16 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-500 dark:text-indigo-400 flex items-center justify-center mb-4">
                   <Search className="w-8 h-8" />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-800 tracking-tight mb-1">
+                <h3 className="text-base font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mb-1">
                   No Advertisements Found
                 </h3>
-                <p className="text-xs text-slate-400 max-w-sm mb-6">
+                <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm mb-6">
                   We couldn&apos;t find any items matching your selected search criteria. Try adjusting your filters or search keywords.
                 </p>
                 <Link
                   href="/ads"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-4 py-2 rounded-full transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 bg-indigo-50 dark:bg-indigo-950/80 px-4 py-2 rounded-full transition-colors"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Clear All Filters</span>

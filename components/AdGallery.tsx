@@ -26,10 +26,10 @@ export default function AdGallery({ images, title }: AdGalleryProps) {
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden p-3 space-y-3">
+    <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-800 overflow-hidden p-3 space-y-3">
       {/* Featured Main Image */}
       <div
-        className="relative aspect-[4/3] sm:aspect-[16/10] rounded-2xl overflow-hidden bg-slate-900 group cursor-pointer"
+        className="relative aspect-[4/3] sm:aspect-[16/10] rounded-2xl overflow-hidden bg-slate-950 group cursor-pointer"
         onClick={() => setIsLightboxOpen(true)}
       >
         <img
@@ -39,15 +39,15 @@ export default function AdGallery({ images, title }: AdGalleryProps) {
         />
 
         {/* Hover overlay hint */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-          <span className="bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+        <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+          <span className="bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-lg">
             <Maximize2 className="w-3.5 h-3.5" />
-            Click to expand
+            Click to expand photo
           </span>
         </div>
 
         {/* Counter Badge */}
-        <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow-md pointer-events-none">
+        <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow-md pointer-events-none">
           {selectedIndex + 1} / {imageList.length}
         </div>
 
@@ -57,7 +57,7 @@ export default function AdGallery({ images, title }: AdGalleryProps) {
             <button
               type="button"
               onClick={handlePrev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/85 hover:bg-white text-slate-800 flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform active:scale-90 cursor-pointer"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/85 dark:bg-slate-900/85 hover:bg-white text-slate-800 dark:text-slate-100 flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform active:scale-90 cursor-pointer"
               aria-label="Previous image"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -65,7 +65,7 @@ export default function AdGallery({ images, title }: AdGalleryProps) {
             <button
               type="button"
               onClick={handleNext}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/85 hover:bg-white text-slate-800 flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform active:scale-90 cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/85 dark:bg-slate-900/85 hover:bg-white text-slate-800 dark:text-slate-100 flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform active:scale-90 cursor-pointer"
               aria-label="Next image"
             >
               <ChevronRight className="w-5 h-5" />
@@ -84,9 +84,9 @@ export default function AdGallery({ images, title }: AdGalleryProps) {
                 key={img.id || idx}
                 type="button"
                 onClick={() => setSelectedIndex(idx)}
-                className={`relative w-20 h-16 sm:w-24 sm:h-20 shrink-0 rounded-xl overflow-hidden bg-slate-100 transition-all cursor-pointer ${
+                className={`relative w-20 h-16 sm:w-24 sm:h-20 shrink-0 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 transition-all cursor-pointer ${
                   isSelected
-                    ? "ring-2 ring-indigo-600 ring-offset-2 scale-105 opacity-100 shadow-md"
+                    ? "ring-2 ring-indigo-600 dark:ring-indigo-400 ring-offset-2 dark:ring-offset-slate-900 scale-105 opacity-100 shadow-md"
                     : "opacity-60 hover:opacity-100 hover:scale-100"
                 }`}
               >
