@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Phone, MessageSquare, Share2, Heart, Check, Copy, AlertCircle, Ban } from "lucide-react";
+import { Phone, MessageSquare, Share2, Heart, Check, Copy, Ban } from "lucide-react";
 
 interface AdContactActionsProps {
   adId: string;
@@ -81,7 +81,7 @@ export default function AdContactActions({
     <div className="space-y-3 relative">
       {/* Toast Notification */}
       {copiedText && (
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-xl flex items-center gap-1.5 animate-in fade-in slide-in-from-bottom-2 duration-150 z-20 whitespace-nowrap">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl flex items-center gap-1.5 animate-in fade-in slide-in-from-top-2 duration-150 z-50 whitespace-nowrap">
           <Check className="w-3.5 h-3.5 text-emerald-400" />
           <span>{copiedText}</span>
         </div>
@@ -89,12 +89,12 @@ export default function AdContactActions({
 
       {/* Sold Notice */}
       {isSold ? (
-        <div className="p-4 bg-red-50 border border-red-200/80 rounded-2xl text-center space-y-1.5">
-          <div className="flex items-center justify-center gap-1.5 text-red-700 font-extrabold text-sm">
+        <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200/80 dark:border-red-900/60 rounded-2xl text-center space-y-1.5">
+          <div className="flex items-center justify-center gap-1.5 text-red-700 dark:text-red-400 font-extrabold text-sm">
             <Ban className="w-4 h-4" />
             <span>ITEM HAS BEEN SOLD</span>
           </div>
-          <p className="text-xs text-red-600/90 leading-relaxed">
+          <p className="text-xs text-red-600/90 dark:text-red-300/80 leading-relaxed">
             This item is no longer available. Contact buttons have been disabled.
           </p>
         </div>
@@ -135,9 +135,9 @@ export default function AdContactActions({
         <button
           type="button"
           onClick={handleShare}
-          className="py-2.5 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200/80 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+          className="py-2.5 px-3 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-200/80 dark:border-slate-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          <Share2 className="w-3.5 h-3.5 text-slate-500" />
+          <Share2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
           <span>Share Ad</span>
         </button>
 
@@ -146,18 +146,41 @@ export default function AdContactActions({
           onClick={toggleFavorite}
           className={`py-2.5 px-3 text-xs font-bold rounded-xl border transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
             isFavorite
-              ? "bg-rose-50 border-rose-200 text-rose-600"
-              : "bg-slate-50 hover:bg-slate-100 border-slate-200/80 text-slate-700"
+              ? "bg-rose-50 dark:bg-rose-950/50 border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400"
+              : "bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200"
           }`}
         >
           <Heart
             className={`w-3.5 h-3.5 ${
-              isFavorite ? "fill-rose-500 text-rose-500" : "text-slate-500"
+              isFavorite ? "fill-rose-500 text-rose-500" : "text-slate-500 dark:text-slate-400"
             }`}
           />
           <span>{isFavorite ? "Saved" : "Save"}</span>
         </button>
       </div>
+
+      {/* Mobile Floating Sticky Bottom Contact Bar */}
+      {!isSold && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-3 flex items-center gap-2 shadow-2xl animate-in slide-in-from-bottom-3 duration-200">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 py-3 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm"
+          >
+            <MessageSquare className="w-4 h-4 fill-white" />
+            <span>WhatsApp</span>
+          </a>
+          <button
+            type="button"
+            onClick={handleRevealPhone}
+            className="flex-1 py-3 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm"
+          >
+            <Phone className="w-4 h-4" />
+            <span>{phoneRevealed ? sellerPhone : "Call Seller"}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
